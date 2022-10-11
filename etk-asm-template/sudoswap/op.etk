@@ -1,0 +1,46 @@
+initStart:
+    push1 runtimeEnd-runtimeStart       #runtimesize
+    returndatasize                      #0 runtimesize
+    dup2                                #runtimesize 0 runtimesize
+    push1 runtimeStart-initStart        #runtimeoffset 0 runtimesize 0 runtimesize
+    returndatasize                      #0 runtimeoffset 0 runtimesize 0 runtimesize
+    codecopy                            #0 runtimesize
+    return
+initend:
+
+runtimeStart:
+    returndatasize                      #0
+    returndatasize                      #0 0
+    returndatasize                      #0 0 0
+    returndatasize                      #0 0 0 0
+    calldatasize                        #cds 0 0 0 0
+    returndatasize                      #0 cds 0 0 0 0
+    returndatasize                      #0 0 cds 0 0 0 0
+    calldatacopy                        #0 0 0 0
+    push1 extradataEnd-extradataStart   #eds 0 0 0 0
+    push1 extradataStart-runtimeStart   #edoffset eds 0 0 0 0
+    calldatasize                        #cds edoffset eds 0 0 0 0
+    codecopy                            #0 0 0 0
+    push1 extradataEnd-extradataStart   #eds 0 0 0 0 
+    calldatasize                        #cds eds 0 0 0 0
+    add                                 #inputds 0 0 0 0
+    returndatasize                      #0 inputds 0 0 0 0
+    push20 0x0000000000000000000000000000000000000000   #addr 0 inputds 0 0 0 0                     
+    gas                                 #gas addr 0 inputds 0 0 0 0
+    delegatecall                        #success 0 0
+    returndatasize                      #rds success 0 0
+    returndatasize                      #rds rds success 0 0
+    swap4                               #0 rds success 0 rds
+    dup1                                #0 0 rds success 0 rds
+    returndatacopy                      #success 0 rds
+    push1 labelreturn                   #labelreturn success 0 rds
+    jumpi                               #0 rds
+    revert                              #
+labelreturn:
+    jumpdest                            #0 rds
+    return                              #
+
+extradataStart:
+%include_hex("extra.etk")
+extradataEnd:
+runtimeEnd:
